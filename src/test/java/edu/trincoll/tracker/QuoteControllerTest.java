@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @DisplayName("Item Controller Tests")
-class ItemControllerTest {
+class QuoteControllerTest {
     
     @Autowired
     private MockMvc mockMvc;
@@ -35,7 +35,7 @@ class ItemControllerTest {
     @BeforeEach
     void setUp() throws Exception {
         // Clear any existing data before each test
-        ItemController.clearStore();
+        QuoteController.clearStore();
     }
     
     @Nested
@@ -55,13 +55,13 @@ class ItemControllerTest {
         @DisplayName("should return all items when items exist")
         void shouldReturnAllItems() throws Exception {
             // Create a test item first
-            Item testItem = new Item();
-            testItem.setName("Test Item");
-            testItem.setDescription("Test Description");
+            Quote testQuote = new Quote();
+            testQuote.setQuoteName("Test Item");
+            testQuote.setQuoteContent("Test Description");
             
             mockMvc.perform(post("/api/items")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(testItem)))
+                    .content(objectMapper.writeValueAsString(testQuote)))
                     .andExpect(status().isCreated());
             
             // Now get all items
@@ -74,28 +74,28 @@ class ItemControllerTest {
     
     @Nested
     @DisplayName("GET /api/items/{id}")
-    class GetItemById {
+    class GetQuoteById {
         
         @Test
         @DisplayName("should return item when it exists")
         void shouldReturnItemWhenExists() throws Exception {
             // Create a test item first
-            Item testItem = new Item();
-            testItem.setName("Specific Item");
-            testItem.setDescription("Specific Description");
+            Quote testQuote = new Quote();
+            testQuote.setQuoteName("Specific Item");
+            testQuote.setQuoteContent("Specific Description");
             
             String response = mockMvc.perform(post("/api/items")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(testItem)))
+                    .content(objectMapper.writeValueAsString(testQuote)))
                     .andExpect(status().isCreated())
                     .andReturn()
                     .getResponse()
                     .getContentAsString();
             
-            Item createdItem = objectMapper.readValue(response, Item.class);
+            Quote createdQuote = objectMapper.readValue(response, Quote.class);
             
             // Get the specific item
-            mockMvc.perform(get("/api/items/{id}", createdItem.getId()))
+            mockMvc.perform(get("/api/items/{id}", createdQuote.getId()))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.name").value("Specific Item"))
                     .andExpect(jsonPath("$.description").value("Specific Description"));
@@ -111,18 +111,18 @@ class ItemControllerTest {
     
     @Nested
     @DisplayName("POST /api/items")
-    class CreateItem {
+    class CreateQuote {
         
         @Test
         @DisplayName("should create new item with valid data")
         void shouldCreateNewItem() throws Exception {
-            Item newItem = new Item();
-            newItem.setName("New Item");
-            newItem.setDescription("New Description");
+            Quote newQuote = new Quote();
+            newQuote.setQuoteName("New Item");
+            newQuote.setQuoteContent("New Description");
             
             mockMvc.perform(post("/api/items")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(newItem)))
+                    .content(objectMapper.writeValueAsString(newQuote)))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id").exists())
                     .andExpect(jsonPath("$.name").value("New Item"))
@@ -144,72 +144,72 @@ class ItemControllerTest {
         @Test
         @DisplayName("should return 400 when name is blank")
         void shouldReturn400WhenNameBlank() throws Exception {
-            Item invalidItem = new Item();
-            invalidItem.setName("");  // Blank name
-            invalidItem.setDescription("Valid Description");
+            Quote invalidQuote = new Quote();
+            invalidQuote.setQuoteName("");  // Blank name
+            invalidQuote.setQuoteContent("Valid Description");
             
             mockMvc.perform(post("/api/items")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(invalidItem)))
+                    .content(objectMapper.writeValueAsString(invalidQuote)))
                     .andExpect(status().isBadRequest());
         }
         
         @Test
         @DisplayName("should not allow duplicate items with same name")
         void shouldNotAllowDuplicates() throws Exception {
-            Item firstItem = new Item();
-            firstItem.setName("Unique Name");
-            firstItem.setDescription("First Description");
+            Quote firstQuote = new Quote();
+            firstQuote.setQuoteName("Unique Name");
+            firstQuote.setQuoteContent("First Description");
             
             // Create first item
             mockMvc.perform(post("/api/items")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(firstItem)))
+                    .content(objectMapper.writeValueAsString(firstQuote)))
                     .andExpect(status().isCreated());
             
             // Try to create duplicate
-            Item duplicateItem = new Item();
-            duplicateItem.setName("Unique Name");  // Same name
-            duplicateItem.setDescription("Different Description");
+            Quote duplicateQuote = new Quote();
+            duplicateQuote.setQuoteName("Unique Name");  // Same name
+            duplicateQuote.setQuoteContent("Different Description");
             
             mockMvc.perform(post("/api/items")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(duplicateItem)))
+                    .content(objectMapper.writeValueAsString(duplicateQuote)))
                     .andExpect(status().isConflict());  // 409 Conflict
         }
     }
     
     @Nested
     @DisplayName("PUT /api/items/{id}")
-    class UpdateItem {
+    class UpdateQuote {
         
         @Test
         @DisplayName("should update existing item")
         void shouldUpdateExistingItem() throws Exception {
             // Create initial item
-            Item initialItem = new Item();
-            initialItem.setName("Original Name");
-            initialItem.setDescription("Original Description");
+            Quote initialQuote = new Quote();
+            initialQuote.setQuoteName("Original Name");
+            initialQuote.setQuoteContent("Original Description");
             
             String response = mockMvc.perform(post("/api/items")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(initialItem)))
+                    .content(objectMapper.writeValueAsString(initialQuote)))
                     .andExpect(status().isCreated())
                     .andReturn()
                     .getResponse()
                     .getContentAsString();
             
-            Item createdItem = objectMapper.readValue(response, Item.class);
+            Quote createdQuote = objectMapper.readValue(response, Quote.class);
             
             // Update the item
-            Item updatedItem = new Item();
-            updatedItem.setName("Updated Name");
-            updatedItem.setDescription("Updated Description");
-            updatedItem.setCompleted(true);
+            Quote updatedQuote = new Quote();
+            updatedQuote.setQuoteName("Updated Name");
+            updatedQuote.setQuoteContent("Updated Description");
+            updatedQuote.setCompleted(true);
             
-            mockMvc.perform(put("/api/items/{id}", createdItem.getId())
+            mockMvc.perform(put("/api/items/{id}", createdQuote.getId())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(updatedItem)))
+                    .content(objectMapper.writeValueAsString(updatedQuote)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.name").value("Updated Name"))
                     .andExpect(jsonPath("$.description").value("Updated Description"))
@@ -219,13 +219,13 @@ class ItemControllerTest {
         @Test
         @DisplayName("should return 404 when updating non-existent item")
         void shouldReturn404WhenUpdatingNonExistent() throws Exception {
-            Item updateItem = new Item();
-            updateItem.setName("Update Name");
-            updateItem.setDescription("Update Description");
+            Quote updateQuote = new Quote();
+            updateQuote.setQuoteName("Update Name");
+            updateQuote.setQuoteContent("Update Description");
             
             mockMvc.perform(put("/api/items/{id}", 999999)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(updateItem)))
+                    .content(objectMapper.writeValueAsString(updateQuote)))
                     .andExpect(status().isNotFound());
         }
         
@@ -233,24 +233,24 @@ class ItemControllerTest {
         @DisplayName("should validate required fields on update")
         void shouldValidateRequiredFieldsOnUpdate() throws Exception {
             // Create initial item
-            Item initialItem = new Item();
-            initialItem.setName("Original Name");
-            initialItem.setDescription("Original Description");
+            Quote initialQuote = new Quote();
+            initialQuote.setQuoteName("Original Name");
+            initialQuote.setQuoteContent("Original Description");
             
             String response = mockMvc.perform(post("/api/items")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(initialItem)))
+                    .content(objectMapper.writeValueAsString(initialQuote)))
                     .andExpect(status().isCreated())
                     .andReturn()
                     .getResponse()
                     .getContentAsString();
             
-            Item createdItem = objectMapper.readValue(response, Item.class);
+            Quote createdQuote = objectMapper.readValue(response, Quote.class);
             
             // Try to update with invalid data
             String invalidUpdate = "{\"name\":\"\",\"description\":\"Valid Description\"}";
             
-            mockMvc.perform(put("/api/items/{id}", createdItem.getId())
+            mockMvc.perform(put("/api/items/{id}", createdQuote.getId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(invalidUpdate))
                     .andExpect(status().isBadRequest());
@@ -259,32 +259,32 @@ class ItemControllerTest {
     
     @Nested
     @DisplayName("DELETE /api/items/{id}")
-    class DeleteItem {
+    class DeleteQuote {
         
         @Test
         @DisplayName("should delete existing item")
         void shouldDeleteExistingItem() throws Exception {
             // Create item to delete
-            Item itemToDelete = new Item();
-            itemToDelete.setName("Delete Me");
-            itemToDelete.setDescription("To Be Deleted");
+            Quote quoteToDelete = new Quote();
+            quoteToDelete.setQuoteName("Delete Me");
+            quoteToDelete.setQuoteContent("To Be Deleted");
             
             String response = mockMvc.perform(post("/api/items")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(itemToDelete)))
+                    .content(objectMapper.writeValueAsString(quoteToDelete)))
                     .andExpect(status().isCreated())
                     .andReturn()
                     .getResponse()
                     .getContentAsString();
             
-            Item createdItem = objectMapper.readValue(response, Item.class);
+            Quote createdQuote = objectMapper.readValue(response, Quote.class);
             
             // Delete the item
-            mockMvc.perform(delete("/api/items/{id}", createdItem.getId()))
+            mockMvc.perform(delete("/api/items/{id}", createdQuote.getId()))
                     .andExpect(status().isNoContent());
             
             // Verify it's gone
-            mockMvc.perform(get("/api/items/{id}", createdItem.getId()))
+            mockMvc.perform(get("/api/items/{id}", createdQuote.getId()))
                     .andExpect(status().isNotFound());
         }
         
@@ -304,31 +304,31 @@ class ItemControllerTest {
         @DisplayName("BONUS: should search items by name")
         void shouldSearchItemsByName() throws Exception {
             // Create test items
-            Item item1 = new Item();
-            item1.setName("Apple");
-            item1.setDescription("Red fruit");
+            Quote quote1 = new Quote();
+            quote1.setQuoteName("Apple");
+            quote1.setQuoteContent("Red fruit");
             
-            Item item2 = new Item();
-            item2.setName("Banana");
-            item2.setDescription("Yellow fruit");
+            Quote quote2 = new Quote();
+            quote2.setQuoteName("Banana");
+            quote2.setQuoteContent("Yellow fruit");
             
-            Item item3 = new Item();
-            item3.setName("Application");
-            item3.setDescription("Software");
+            Quote quote3 = new Quote();
+            quote3.setQuoteName("Application");
+            quote3.setQuoteContent("Software");
             
             mockMvc.perform(post("/api/items")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(item1)))
+                    .content(objectMapper.writeValueAsString(quote1)))
                     .andExpect(status().isCreated());
             
             mockMvc.perform(post("/api/items")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(item2)))
+                    .content(objectMapper.writeValueAsString(quote2)))
                     .andExpect(status().isCreated());
             
             mockMvc.perform(post("/api/items")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(item3)))
+                    .content(objectMapper.writeValueAsString(quote3)))
                     .andExpect(status().isCreated());
             
             // Search for items containing "App"

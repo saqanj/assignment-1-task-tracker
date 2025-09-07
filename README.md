@@ -83,7 +83,7 @@ cd assignment-1-task-tracker
 ### 3. Start the Application
 ```bash
 ./gradlew bootRun
-# Visit http://localhost:8080/api/items
+# Visit http://localhost:8080/api/quotes
 ```
 
 ### 4. Implement Your Solution
@@ -94,24 +94,24 @@ cd assignment-1-task-tracker
 
 ### 5. Test Your API
 ```bash
-# Create an item
-curl -X POST http://localhost:8080/api/items \
+# Create an quote
+curl -X POST http://localhost:8080/api/quotes \
   -H "Content-Type: application/json" \
-  -d '{"name":"Test","description":"Test item"}'
+  -d '{"name":"Test","description":"Test quote"}'
 
-# Get all items  
-curl http://localhost:8080/api/items
+# Get all quotes  
+curl http://localhost:8080/api/quotes
 
-# Get specific item
-curl http://localhost:8080/api/items/1
+# Get specific quote
+curl http://localhost:8080/api/quotes/1
 
-# Update item
-curl -X PUT http://localhost:8080/api/items/1 \
+# Update quote
+curl -X PUT http://localhost:8080/api/quotes/1 \
   -H "Content-Type: application/json" \
-  -d '{"name":"Updated","description":"Updated item","completed":true}'
+  -d '{"name":"Updated","description":"Updated quote","completed":true}'
 
-# Delete item
-curl -X DELETE http://localhost:8080/api/items/1
+# Delete quote
+curl -X DELETE http://localhost:8080/api/quotes/1
 ```
 
 ## Grading Rubric
@@ -134,7 +134,7 @@ curl -X DELETE http://localhost:8080/api/items/1
 
 ### Common Pitfalls
 - Don't forget to validate input (empty strings, nulls)
-- Remember to handle 404s for missing items
+- Remember to handle 404s for missing quotes
 - Duplicate names should return 409 Conflict
 - IDs should be generated, not provided by client
 
@@ -145,7 +145,7 @@ git checkout -b feature/implement-create-endpoint
 
 # Commit often
 git add .
-git commit -m "Implement POST endpoint for creating items"
+git commit -m "Implement POST endpoint for creating quotes"
 
 # Push to GitHub
 git push origin feature/implement-create-endpoint

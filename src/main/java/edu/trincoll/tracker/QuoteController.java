@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(value = "/api/items", produces = MediaType.APPLICATION_JSON_VALUE) // TODO: Rename to match your domain (e.g., /api/bookmarks, /api/recipes)
-public class ItemController {
+public class QuoteController {
 
     // Simple in-memory store (will be replaced by a database later)
-    private static final Map<Long, Item> STORE = new ConcurrentHashMap<>();
+    private static final Map<Long, Quote> STORE = new ConcurrentHashMap<>();
     private static final AtomicLong ID_SEQ = new AtomicLong(1);
 
     /**
@@ -30,12 +30,12 @@ public class ItemController {
      * Returns all items in the system
      */
     @GetMapping
-    public ResponseEntity<List<Item>> getAll() {
-        List<Item> items = STORE.values()
+    public ResponseEntity<List<Quote>> getAll() {
+        List<Quote> quotes = STORE.values()
                 .stream()
-                .sorted(Comparator.comparing(Item::getId))
+                .sorted(Comparator.comparing(Quote::getId))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(items);
+        return ResponseEntity.ok(quotes);
     }
 
     /**
@@ -44,12 +44,12 @@ public class ItemController {
      * Return 404 if item doesn't exist
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Item> getById(@PathVariable Long id) {
-        Item item = STORE.get(id);
-        if (item == null) {
+    public ResponseEntity<Quote> getById(@PathVariable Long id) {
+        Quote quote = STORE.get(id);
+        if (quote == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(item);
+        return ResponseEntity.ok(quote);
     }
 
     /**
@@ -59,25 +59,25 @@ public class ItemController {
      * - Reject duplicates by name (409 Conflict)
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Item> create(@RequestBody Item item) {
+    public ResponseEntity<Quote> create(@RequestBody Quote quote) {
         // Validate name
-        if (item.getName() == null || item.getName().isBlank()) {
+        if (quote.getQuoteName() == null || quote.getQuoteName().isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         // Enforce uniqueness by name
         boolean duplicate = STORE.values().stream()
-                .anyMatch(existing -> Objects.equals(existing.getName(), item.getName()));
+                .anyMatch(existing -> Objects.equals(existing.getQuoteName(), quote.getQuoteName()));
         if (duplicate) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
         // Assign new ID (ignore any provided id)
         long id = ID_SEQ.getAndIncrement();
-        Item toSave = new Item();
+        Quote toSave = new Quote();
         toSave.setId(id);
-        toSave.setName(item.getName());
-        toSave.setDescription(item.getDescription());
-        toSave.setCompleted(item.isCompleted());
+        toSave.setQuoteName(quote.getQuoteName());
+        toSave.setQuoteContent(quote.getQuoteContent());
+        toSave.setCompleted(quote.isCompleted());
         // Keep server-controlled createdAt from constructor; do not override from client
 
         STORE.put(id, toSave);
@@ -92,24 +92,24 @@ public class ItemController {
      * - Reject duplicates by name (409 Conflict) if changing to an existing name
      */
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Item> update(@PathVariable Long id, @RequestBody Item update) {
-        Item existing = STORE.get(id);
+    public ResponseEntity<Quote> update(@PathVariable Long id, @RequestBody Quote update) {
+        Quote existing = STORE.get(id);
         if (existing == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        if (update.getName() == null || update.getName().isBlank()) {
+        if (update.getQuoteName() == null || update.getQuoteName().isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         // Prevent changing to a name that duplicates another item's name
         boolean duplicateName = STORE.values().stream()
                 .anyMatch(other -> !Objects.equals(other.getId(), id)
-                        && Objects.equals(other.getName(), update.getName()));
+                        && Objects.equals(other.getQuoteName(), update.getQuoteName()));
         if (duplicateName) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        existing.setName(update.getName());
-        existing.setDescription(update.getDescription());
+        existing.setQuoteName(update.getQuoteName());
+        existing.setQuoteContent(update.getQuoteContent());
         existing.setCompleted(update.isCompleted());
         // Keep original createdAt (ignore client-sent value)
 
@@ -124,7 +124,7 @@ public class ItemController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        Item removed = STORE.remove(id);
+        Quote removed = STORE.remove(id);
         if (removed == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -137,14 +137,14 @@ public class ItemController {
      * BONUS endpoint
      */
     @GetMapping("/search")
-    public ResponseEntity<List<Item>> searchByName(@RequestParam("name") String name) {
+    public ResponseEntity<List<Quote>> searchByName(@RequestParam("name") String name) {
         if (name == null) {
             return ResponseEntity.badRequest().build();
         }
         String query = name.toLowerCase(Locale.ROOT);
-        List<Item> results = STORE.values().stream()
-                .filter(it -> it.getName() != null && it.getName().toLowerCase(Locale.ROOT).contains(query))
-                .sorted(Comparator.comparing(Item::getId))
+        List<Quote> results = STORE.values().stream()
+                .filter(it -> it.getQuoteName() != null && it.getQuoteName().toLowerCase(Locale.ROOT).contains(query))
+                .sorted(Comparator.comparing(Quote::getId))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(results);
     }
