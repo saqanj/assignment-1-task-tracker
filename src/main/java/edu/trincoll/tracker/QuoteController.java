@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 
 /**
  * AI Collaboration Report:
- * - AI Tool Used: [Your AI tool here - ChatGPT/Claude/Copilot/Gemini]
- * - Most Helpful Prompt: [Paste the prompt that worked best]
- * - AI Mistake We Fixed: [Describe what the AI got wrong and how you fixed it]
- * - Time Saved: [Estimate hours saved using AI]
- * - Team Members: [List your team members' names]
+ * - AI Tool Used: ChatGPT-4
+ * - Most Helpful Prompt: "Create a Spring Boot REST controller for quotes with GET, POST, PUT, DELETE operations that validates required fields and prevents duplicate names"
+ * - AI Mistake We Fixed: AI initially suggested using @Valid annotation for validation, but our tests expected manual validation logic, so we implemented custom validation checks in each method
+ * - Time Saved: Approximately 2-3 hours on boilerplate CRUD operations and HTTP status code handling
+ * - Team Members: Saqlain Anjum, Gabriela Scavenius, Noella Uwayisenga, Chris Burns.
  */
 @RestController
 @RequestMapping(value = "/api/items", produces = MediaType.APPLICATION_JSON_VALUE) // TODO: Rename to match your domain (e.g., /api/bookmarks, /api/recipes)
