@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 
 /**
  * AI Collaboration Report:
- * - AI Tool Used: ChatGPT-4
- * - Most Helpful Prompt: "Create a Spring Boot REST controller for quotes with GET, POST, PUT, DELETE operations that validates required fields and prevents duplicate names"
+ * - AI Tool Used: ChatGPT-4 and IntelliJ IDEA auto-generation
+ * - Most Helpful Prompt: "Build Spring Boot Quote entity with validation and REST controller: CRUD operations, HTTP status handling, duplicate prevention logic"
  * - AI Mistake We Fixed: AI initially suggested using @Valid annotation for validation, but our tests expected manual validation logic, so we implemented custom validation checks in each method
  * - Time Saved: Approximately 2-3 hours on boilerplate CRUD operations and HTTP status code handling
  * - Team Members: Saqlain Anjum, Gabriela Scavenius, Noella Uwayisenga, Chris Burns.
